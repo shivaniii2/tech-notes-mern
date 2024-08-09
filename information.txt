@@ -1,0 +1,189 @@
+app.use('/', express.static(path.join(__dirname, 'public')))
+This line is self explainatory.Let us break each word there.
+
+app.use():We already know that this is a method in Express that mounts middleware functions at the specified path. Middleware functions are functions that have access to the request object (req), the response object (res), and the next middleware function in the application’s request-response cycle.
+
+'/' : This is the base URL path for which the middleware function will be executed. In this case, '/' means the middleware will be executed for all requests starting from the root URL.
+
+express.static() : This is a built-in middleware function in Express to serve static files such as images, CSS files, and JavaScript files.
+
+path.join() is a method from the path module in Node.js that joins all given path segments together.
+
+
+
+That is one part and thats great but now comes another important thing to know : Router 
+In Express, a Router is not exactly middleware, but it can be thought of as a specialized form of middleware that organizes routes.
+It acts as a mini-application with its own set of routes and middleware, which you can mount onto the main application or other routers.
+When you use app.use() to mount a Router, you are essentially using it as middleware. This means the Router gets control over the request when its path matches the request URL.
+Within a Router, you can define multiple routes and middleware specific to those routes.
+You can even apply middleware specifically to a Router instance. This middleware will only run for routes defined in that Router.
+Let us create a new Router instance in our app also.
+
+
+
+After this there is one more thing to know and that is app.all method .
+The app.all method is used to handle all HTTP methods (GET, POST, PUT, DELETE, etc.) for a specific route and calls that callback for all kind of HTTP requests that you have provided as a second argument to this middleware. Ofcourse you can call this app.all method a middleware as it does have access to response request object and next() function.
+Here in our application as t is written after the route handler (Router instance call), all it does is to call the callback  provided to it for all the  routes that have not been matched by the above routes and serves a 404 error page.
+
+
+
+
+Thats great too but now Let us know a little bit express.json():
+express.json() is a built-in middleware function in Express.js, used for parsing incoming requests with JSON payloads.
+It parses incoming JSON requests and puts the parsed data(JS object format of JSON ) in req.body.
+Useful for APIs that accept JSON data, making it easy to access and manipulate the incoming data.
+example code snippet  :
+app.use(express.json());
+
+app.post('/example', (req, res) => {
+  // Access the parsed JSON data in req.body
+  console.log(req.body);
+  res.send('JSON data received');
+});
+
+
+Thats an easy thing to use built in middlewares in express but let us also create our own custom middlewares too .
+So, let is create our own folder for middlewares and at first we are focusing on creating a middleware that Ofcourse will be executed for every request to our app and this middleware will log the details of incoming request along with time and type etc.
+Let us do this but before you actually start do you know about date-fns and uuid ?
+Let us understand each of them :
+
+date-fns is a modern JavaScript date utility library, offering a comprehensive set of functions for manipulating, formatting, and working with dates. It is designed to be modular, enabling you to import only the functions you need, which helps in keeping the bundle size small.
+It offers functionalities like comparing dates , formatting dates etc.
+
+
+uuid is a popular JavaScript library used for generating UUIDs (Universally Unique Identifiers). UUIDs are 128-bit long unique identifiers that are often used to identify information in computer systems
+So you did see how we are logging the detail of every incoming request after we just made a custom logger middleware of our own . The code says evevrything by itself. 
+
+
+Let us create one more custom error handling middleware function . wait whats that ?
+In Express.js, error-handling middleware functions are special types of middleware that are designed to handle errors. They are defined with four parameters: err, req, res, and next. The presence of the err parameter is what distinguishes an error-handling middleware from regular middleware.
+Error-handling middleware functions must be defined with four parameters: err, req, res, and next.
+The err parameter contains the error object that was thrown.
+Always or ideally place the error middleware at the end of the middleware stack using app.use(the order in which middleware functions are defined is important because they are executed in the order they are added to the stack. For error-handling middleware specifically, it should be placed at the end of the middleware stack to ensure that it only handles errors that occur during the execution of previous middleware functions and routes.)
+
+
+
+Another thing we learnt in this lesson is about cookie parser . we installed it from npm .
+Note : When we talk about parsing JSON or cookies, we are referring to the process of converting a string (which is how data is typically received in HTTP headers or request bodies) into a JavaScript object that can be easily manipulated in code.
+
+
+
+We already have an idea about CORS and preflight requests associated with it .
+Its a security feature implemented by browser that does not allow or restricts web pages to request a resource from a different domain outside the domain from which the request is originated.
+The browser automatically sends a preflight request to check if the actual request is allowed before making a cross origin resource sharing request.
+The server must respond to this preflight request with appropriate CORS headers that indicate whether the actual request is allowed.
+We can always enable "cors" in our express application by using 'cors' middleware .
+Install it first .(The cors package is a Node.js middleware used in Express.js applications to enable Cross-Origin Resource Sharing (CORS) with various options. It provides a convenient way to configure and handle CORS-related settings, ensuring that your server can respond to requests from different origins as needed.)
+use it in your application.
+You can always configure corsOptions to define which headers, methods and origins are allowed .
+Pass these corsOptions to cors middleware that you are using in your app.
+Let us do that first . install cors and use this middleware in your app .
+config folder has allowedOrigins file and corsOptions file from where you can export allowed corsoptions and then pass them to cors middleware in the server.js
+
+
+
+
+Hi so today is a new day to learn new thing and the lrarning starts from dotenv module.
+dotenv is a popular Node.js module that loads environment variables from a .env file into process.env.
+process.env is a global object in Node.js that provides access to the environment variables for the current process.
+dotenv  helps manage environment variables in a secure and organized way, making it easier to configure and maintain your application without hardcoding sensitive information directly into your source code.(Do not forget to write your env file in gitignore)
+Steps to use : 1 npm install dotenv
+2 Create a .env File
+3 Load the Environment Variables in Your Application: require('dotenv').config()  ;   
+4 Access these env varaibles(Assuming there is a key value API_KEY=your-api-key in your env file ) like console.log(process.env.API_KEY); 
+
+
+
+
+
+Now as our project is proceeding we need to make sure we know how can we connect or interact with our mongo db and here we are using mongoose as ODM(Object Data Modelling )library.
+so starting off with installing it in our project as it is a third party library.
+And as long as I remember mongoose is all about schemas and models for more details (go see my Node-project repo > Mongoose > readme.txt).
+For a quick recap : schemas  - To enforce structure and to define rules on all the documents in the collection of my database.
+Model : A constructor function to create instances of documents that adhere to the schema and provides methods to  interact with the documents in the collection,such as CRUD
+So at first we will be creating a folder named Models and have a file in it (User.js) to define schema and model for users in our app .
+I have defined a schema for documents in the users named collection .
+const User = mongoose.model('User' , userSchema)// This line makes sure users(small letter and plural form of what you have passed to this model constructor (in your case it is User what you have passed so users)) is going to be the name of the collection that have documents adhere to the userSchema.
+
+Now our app also need one more model and that is for notes as there are going to be notes related to each user and so we need to have a database for notes also .
+Here in the noteSchema 
+user : {
+        type : mongoose.Schema.Types.ObjectId,
+        required : true,
+        ref : User
+    }
+    
+    this user field is an ObjectId  as you can see from what we have in type field and The ref field is set to User, which tells Mongoose that this ObjectId references the User model. This allows for population of user data when querying notes.
+
+
+
+
+Now a new thing we are learning about as we need a ticket number for every note (document) which should be unique and sequential and ofcourse ObjectId is a long string that too not in sequence so we are going to use mongoose-sequence for that.Let us install it first using npm.
+mongoose-sequence is a plugin for Mongoose which provides auto-incrementing sequence fields. This is particularly useful for scenarios where you need a unique, sequential identifier for documents.
+
+
+const AutoIncrement = require('mongoose-sequence')(mongoose) - here mongoose is being passed as an argument
+You must be thinking about this complex import here so let me explain this to you :
+This initializes the mongoose-sequence plugin with the Mongoose instance, allowing you to use the AutoIncrement plugin in your Mongoose schemas.
+By passing mongoose to mongoose-sequence, the plugin can extend Mongoose's schema capabilities to support auto-incrementing fields.
+Now you must be thinking about plugin right and are they different from third party library ? so here is the explaination :
+Plugins are pieces of code that add specific features or functionalities to an existing software application without modifying its core structure.They can be added or removed without affecting the main application’s codebase.
+Okay that is enough about mongoose-sequence plugin , Now use it for ticket of notes .
+
+
+
+So now as we have schemas and model defined for both notes and users db , let us now connect to db using the connection string that we have in .env file .   config > dbConn.js file
+
+
+After the connection let us make sure that we have routing and controllers for the users and notes model so let us start with that.
+We have here another file userRoute.js inside root folder for handling routes that start with /users .
+
+We have learnt something new regarding route handlers in express as you can see we have used  express.Router()  : creates a new router object, which you can use to define routes separately from the main application object. This helps in organizing your code, especially when you have multiple routes. In our case for root route we have root.js and for routes that start with /users we have userRoute.js file . 
+router.route('/') is a shorthand for defining multiple route handlers for different HTTP methods(GET POST etc) on the same route  ('/' in this case actually for the route /users).
+Then there are corresponding controller functions that will be executed when a request comes to /users route
+
+
+
+Also we got to know about express-async-handler: It is a middleware utility that simplifies error handling in asynchronous route handlers. It ensures that any errors thrown within the async function are passed to the next middleware . You can skip using multiple try catch .
+
+
+
+Let us understand the line :
+await User.find().select('-password').lean():
+User.find() queries the database for all user documents.
+.select('-password') excludes the password field from the results.
+.lean() returns plain JavaScript objects instead of Mongoose documents, which can be more efficient when you don't need the full Mongoose document .
+
+express-async-handler ,lean() and exec() are ofcourse the key takeaways but there is another new important library we learnt about today and that is Bcrypt : 
+It is a widely-used library for hashing passwords in Node.js applications. It provides a way to securely store passwords in a hashed form rather than plain text, enhancing the security of user data.
+Bcrypt uses a hashing algorithm to transform a password into a fixed-size string of characters, which is stored in the database instead of the actual password.
+Bcrypt incorporates a unique salt for each password. A salt is a random string added to the password before hashing. This ensures that even if two users have the same password, their hashes will be different due to different salts.
+You can hash a password using the hash function from bcrypt library.This function takes the plain text password and the cost factor as argument
+
+Let us use this library to make sure that the passwords of the users in the db are hashed ones .(npm i bcrypt)
+
+
+
+
+I think this is the right time for you to understand the difference or advantages of mongoose over native  mongo db drivers 
+as while creating a new user in the database , we used a create method given bt mongoose.
+The create method in Mongoose is a convenience method for creating and saving a document to the database in a single step.
+If you need to create a new user in MongoDB from a Node.js application without using Mongoose, you can use the native MongoDB driver. The MongoDB Node.js driver allows you to interact with MongoDB directly and perform CRUD (Create, Read, Update, Delete) operations.
+And the line of creating an user in a single loc would look something like this :
+
+  const collection = db.collection('users');
+  const result = await collection.insertOne(user);
+  
+  Mongoose’s create method combines document creation and saving into a single call. It is a higher-level abstraction and automatically handles some of the boilerplate code.
+  insertOne: A lower-level method provided by the native MongoDB driver, accessible through Mongoose’s collection property, useful for more granular control and direct database operations.(No schema , no validations)
+  
+  
+  
+  Now let us focus on update data in db and delete data .
+  
+  
+  
+So today I was kinda validating the controllers i have written to perform CRUD operations on USER model with POSTMAN and during UPDATE process I encountered an unexpected behaviour due to the usage of Boolean instead of "boolean" while validating data .Its "boolean" if you want to check the type of .
+
+
+Today we are going to write controllers and route for Notes model.
