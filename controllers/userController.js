@@ -43,6 +43,7 @@ const createNewUser = asyncHandler(async(req , res ) =>{
 const updateUser = asyncHandler(async(req, res) =>{
     const {id , username , password  ,roles ,  active  } = req.body ;
     //confirm data
+    
     if(!username|| !Array.isArray(roles) || typeof active !== 'boolean'){
         return res.status(400).json({message : "All Fields are required"})
     }

@@ -52,7 +52,7 @@ It offers functionalities like comparing dates , formatting dates etc.
 
 
 uuid is a popular JavaScript library used for generating UUIDs (Universally Unique Identifiers). UUIDs are 128-bit long unique identifiers that are often used to identify information in computer systems
-So you did see how we are logging the detail of every incoming request after we just made a custom logger middleware of our own . The code says evevrything by itself. 
+So you did see how we are logging the detail of every incoming request after we just made a custom logger middleware of our own . The code says everything by itself. 
 
 
 Let us create one more custom error handling middleware function . wait whats that ?

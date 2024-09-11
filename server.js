@@ -10,6 +10,7 @@ const errorHandler = require('./middleware/errorHandler') // Default import
 const routes = require('./routes/root');
 const users = require('./routes/userRoute')
 const notes = require('./routes/noteRoute')
+const auth = require('./routes/authRoute')
 const corsOptions = require('./config/corsOptions');
 const {connectDb} = require('./config/dbConnection')
 
@@ -47,6 +48,8 @@ app.use('/users' ,users )
 // Route handler for /notes route
 app.use('/notes' , notes)
 
+// Route handler for /auth route
+app.use('/auth' ,  auth)
 
 app.all('*', (req , res ) => {
     res.status(404);
